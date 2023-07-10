@@ -27,9 +27,35 @@ def main():
     df1.printSchema()
 
 
-    common_keys=[('station_id','station_id'),('name','name'),('lat','lat'),('long','long'),('dockcount','dockcount'),('landmark','landmark'),('installation','installation')]
-    comparison = dc.SparkCompare(spark, df1, df2, join_columns=['station_id'])
-    comparison.report()
+    df3 = df1.join(df2, df1.installation == df2.installation_x, "left_anti")
+
+    df3.show()
+
+    df4 = df1.exceptAll(df2)
+    df5 = df2.exceptAll(df1)
+    df4.show()
+    df5.show()
+
+    df6 = df4.unionAll(df5)
+    df6.show()
+
+
+
+    df7 = df1.select(['station_id','name','installation']).subtract(df2.select(['station_id','name','installation_x']))
+    df8 = df2.select(['station_id','name','installation_x']).subtract(df1.select(['station_id','name','installation']))
+    df7.show()
+    df8.show()
+    df9 = df7.unionAll(df8)
+    df9.show()
+    # common_keys=[('station_id','station_id'),('name','name'),('lat','lat'),('long','long'),('dockcount','dockcount'),('landmark','landmark'),('installation','installation')]
+    # comparison = dc.Compare(spark, df1, df2, join_columns=['station_id'])
+    # report_file=    comparison.report()
+    # report(file=<_io.TextIOWrapper name='<stdout>' mode='w' encoding='utf-8'>)
+    #
+    # x = comparison.rows_both_all()
+    # with open('my_report.txt', 'w') as report_file:
+    #     comparison.report(file=report_file)
+
     # comparison.rows_both_mismatch.display()
 def extract_data(spark, path):
     """Load data from Parquet file format.
