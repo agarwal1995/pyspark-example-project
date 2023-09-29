@@ -54,6 +54,7 @@ def main():
 
     # execute ETL pipeline
     data = extract_data(spark)
+    data.show()
     data_transformed = transform_data(data, config['steps_per_floor'])
     load_data(data_transformed)
 
